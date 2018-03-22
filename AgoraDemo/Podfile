@@ -1,0 +1,12 @@
+platform :ios, '9.0'
+use_frameworks!
+
+target ‘AgoraDemo’ do
+    pod 'SVProgressHUD'
+    
+    pod 'AgoraRtcEngine_iOS'
+    
+    pod 'Masonry'
+    pod 'RealReachability'
+
+end
