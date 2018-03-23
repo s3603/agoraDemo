@@ -1,12 +1,12 @@
 PODS:
-  - AgoraRtcEngine_iOS (2.0.2)
+  - AgoraRtcEngine_iOS (2.1.1)
   - Masonry (1.1.0)
   - RealReachability (1.1.9):
     - RealReachability/Connection (= 1.1.9)
     - RealReachability/Ping (= 1.1.9)
   - RealReachability/Connection (1.1.9)
   - RealReachability/Ping (1.1.9)
-  - SVProgressHUD (2.2.2)
+  - SVProgressHUD (2.2.5)
 
 DEPENDENCIES:
   - AgoraRtcEngine_iOS
@@ -15,10 +15,10 @@ DEPENDENCIES:
   - SVProgressHUD
 
 SPEC CHECKSUMS:
-  AgoraRtcEngine_iOS: 67884f8bbe46aae8ed9af4195b0683562f083fde
+  AgoraRtcEngine_iOS: 92bf85f262f43dec20809fe7d8a35e8f7f02d255
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   RealReachability: a8c483900986a0f3305733961effbfbb00637a02
-  SVProgressHUD: 59b2d3dabacbd051576d21d32293ca7228dc18b0
+  SVProgressHUD: 1428aafac632c1f86f62aa4243ec12008d7a51d6
 
 PODFILE CHECKSUM: a096029ad9fd8f68b5eea5958506d39baf202a65
 

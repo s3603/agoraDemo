@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MultiCallViewController">
+            <connections>
+                <outlet property="acceptButton" destination="80S-75-br6" id="S1s-Zf-Pun"/>
+                <outlet property="buttonStackView" destination="LKI-rh-c9A" id="JjV-tI-6tb"/>
+                <outlet property="callingLabel" destination="WZs-GL-QDk" id="ku7-kj-a0y"/>
+                <outlet property="hangupButton" destination="9G2-AE-a8J" id="89f-vU-nem"/>
+                <outlet property="localVideo" destination="HoY-pi-zHM" id="8ZX-Zv-W8x"/>
+                <outlet property="micButton" destination="Ljw-hA-iRQ" id="he8-He-Se3"/>
+                <outlet property="view" destination="RjT-7A-kr8" id="eKM-Fy-bUy"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="RjT-7A-kr8">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="is being called ..." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WZs-GL-QDk">
+                    <rect key="frame" x="124" y="66.5" width="127.5" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ljw-hA-iRQ" userLabel="muteButton">
+                    <rect key="frame" x="30.5" y="479.5" width="35" height="51"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="51" id="YU1-0d-BR5"/>
+                        <constraint firstAttribute="width" constant="35" id="cLf-Vx-nmo"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="unmute"/>
+                    <state key="selected" backgroundImage="mute"/>
+                    <connections>
+                        <action selector="muteButtonClicked:" destination="-1" eventType="touchUpInside" id="Cs3-QA-p0T"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lGW-dH-zH4" userLabel="switchCameraButton">
+                    <rect key="frame" x="300" y="488.5" width="45" height="32"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="32" id="STG-dU-VHm"/>
+                        <constraint firstAttribute="width" constant="45" id="xpc-R8-L0X"/>
+                    </constraints>
+                    <state key="normal" backgroundImage="camera"/>
+                    <connections>
+                        <action selector="switchCameraButtonClicked:" destination="-1" eventType="touchUpInside" id="T6s-1v-KIB"/>
+                    </connections>
+                </button>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="LKI-rh-c9A">
+                    <rect key="frame" x="65.5" y="540.5" width="234.5" height="60"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9G2-AE-a8J">
+                            <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="60" id="Eto-x2-Nzm"/>
+                                <constraint firstAttribute="height" constant="60" id="M21-F4-89i"/>
+                            </constraints>
+                            <state key="normal" backgroundImage="hangup"/>
+                            <connections>
+                                <action selector="hangupButtonClicked:" destination="-1" eventType="touchUpInside" id="dkj-Fy-zfr"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="80S-75-br6">
+                            <rect key="frame" x="174.5" y="0.0" width="60" height="60"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="60" id="Isl-A8-Hhw"/>
+                                <constraint firstAttribute="width" constant="60" id="cvO-DD-zs6"/>
+                            </constraints>
+                            <state key="normal" backgroundImage="call"/>
+                            <connections>
+                                <action selector="acceptButtonClicked:" destination="-1" eventType="touchUpInside" id="wOg-gk-9dj"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HoY-pi-zHM">
+                    <rect key="frame" x="16" y="95" width="160" height="153"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6OT-6n-Gca">
+                    <rect key="frame" x="288" y="20" width="68" height="57"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="添加"/>
+                    <connections>
+                        <action selector="addUserButtonClicked:" destination="-1" eventType="touchUpInside" id="3bD-Qx-oQG"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fAg-dc-rnG">
+                    <rect key="frame" x="16" y="20" width="92" height="57"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="刷新频道用户"/>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Ql8-Mm-w40" firstAttribute="trailing" secondItem="lGW-dH-zH4" secondAttribute="trailing" constant="30" id="N1h-wX-8TJ"/>
+                <constraint firstItem="WZs-GL-QDk" firstAttribute="top" secondItem="Ql8-Mm-w40" secondAttribute="bottom" multiplier="0.1" id="TMU-7i-13o"/>
+                <constraint firstItem="LKI-rh-c9A" firstAttribute="top" secondItem="lGW-dH-zH4" secondAttribute="bottom" constant="20" id="VhC-ve-dTg"/>
+                <constraint firstItem="LKI-rh-c9A" firstAttribute="top" secondItem="Ljw-hA-iRQ" secondAttribute="bottom" constant="10" id="cWh-JD-ggh"/>
+                <constraint firstItem="LKI-rh-c9A" firstAttribute="trailing" secondItem="lGW-dH-zH4" secondAttribute="leading" id="joj-Vb-Ow0"/>
+                <constraint firstItem="Ljw-hA-iRQ" firstAttribute="leading" secondItem="Ql8-Mm-w40" secondAttribute="leading" constant="30" id="jqM-5d-0RG"/>
+                <constraint firstItem="LKI-rh-c9A" firstAttribute="leading" secondItem="Ljw-hA-iRQ" secondAttribute="trailing" id="lNM-jK-tcX"/>
+                <constraint firstItem="WZs-GL-QDk" firstAttribute="centerX" secondItem="RjT-7A-kr8" secondAttribute="centerX" id="oVx-1K-Bs6"/>
+                <constraint firstItem="LKI-rh-c9A" firstAttribute="bottom" secondItem="Ql8-Mm-w40" secondAttribute="bottom" multiplier="0.9" id="yyx-zE-5sX"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Ql8-Mm-w40"/>
+            <point key="canvasLocation" x="33.5" y="113.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="call" width="188" height="188"/>
+        <image name="camera" width="136" height="96"/>
+        <image name="hangup" width="188" height="188"/>
+        <image name="mute" width="88" height="124"/>
+        <image name="unmute" width="88" height="128"/>
+    </resources>
+</document>

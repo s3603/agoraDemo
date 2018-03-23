@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="UserTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="59.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fys-zK-NJk">
+                        <rect key="frame" x="0.0" y="0.0" width="54" height="59.5"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="54" id="XU3-EA-4TK"/>
+                        </constraints>
+                        <state key="normal" image="unselected"/>
+                        <state key="selected" image="selected"/>
+                    </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DCR-Ic-VCh">
+                        <rect key="frame" x="62" y="19" width="42.5" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="des" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0m3-e7-dyO">
+                        <rect key="frame" x="256" y="19" width="28" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.66666666669999997" green="0.66666666669999997" blue="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="fys-zK-NJk" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="NF7-R2-wAc"/>
+                    <constraint firstItem="fys-zK-NJk" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="dVW-mv-jmh"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="0m3-e7-dyO" secondAttribute="trailing" constant="20" id="e7B-aY-Yjy"/>
+                    <constraint firstItem="DCR-Ic-VCh" firstAttribute="leading" secondItem="fys-zK-NJk" secondAttribute="trailing" constant="8" id="qA4-Fh-ANR"/>
+                    <constraint firstItem="0m3-e7-dyO" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="rhc-1s-XYR"/>
+                    <constraint firstAttribute="bottom" secondItem="fys-zK-NJk" secondAttribute="bottom" id="yNK-b6-oBL"/>
+                    <constraint firstItem="DCR-Ic-VCh" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="z1W-gb-57A"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="desLab" destination="0m3-e7-dyO" id="lV9-81-K7k"/>
+                <outlet property="nameLab" destination="DCR-Ic-VCh" id="FQr-02-M5F"/>
+                <outlet property="selectedBtn" destination="fys-zK-NJk" id="1RX-pO-RfR"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="selected" width="21" height="21"/>
+        <image name="unselected" width="20" height="20"/>
+    </resources>
+</document>
