@@ -7,13 +7,12 @@
 //
 
 #import "ViewController.h"
-#import "KeyCenter.h"
-#import <AgoraSigKit/AgoraSigKit.h>
 #import "TTDCallClient.h"
+#import "SelectedUserViewController.h"
+#import "MultiCallViewController.h"
 
 @interface ViewController ()
 {
-    AgoraAPI *signalEngine;
 }
 
 @end
@@ -23,10 +22,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    signalEngine = [AgoraAPI getInstanceWithoutMedia:[KeyCenter appId]];
-
     // please login
-    [self presentLogin];
+    [self performSelector:@selector(presentLogin) withObject:nil afterDelay:0.5];
 }
 
 
@@ -35,9 +32,9 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)presentLogin
+-(IBAction)presentLogin
 {
-    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"请您登录" message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     for (int i=0; i<5; i++) {
         NSString *account = [NSString stringWithFormat:@"%d",i+10000];
         UIAlertAction *user1 = [UIAlertAction actionWithTitle:account style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -56,14 +53,24 @@
 {
     [[TTDCallClient sharedTTDCallClient] loginWithAccount:account Success:^(uint32_t uid, int errorCode) {
         if (!errorCode) {
-            self.userLab.text = [NSString stringWithFormat:@"当前登录：%@",account];
+            [SVProgressHUD showSuccessWithStatus:@"登录成功"];
+            dispatch_async_main_safe((^{
+                self.userLab.text = [NSString stringWithFormat:@"当前登录：%@",account];
+            }));
         }
     }];
 }
 
 -(IBAction)pushInviteUserVC:(id)sender
 {
-    
+    SelectedUserViewController *selectUserVC = [[SelectedUserViewController alloc] initWithNibName:@"SelectedUserViewController" bundle:nil];
+    [self presentViewController:selectUserVC animated:YES completion:nil];
+    [selectUserVC setCommitBlock:^(NSArray *userIdArray) {
+        dispatch_async_main_safe(^{
+            MultiCallViewController *callVC = [[MultiCallViewController alloc] initWithNibName:@"MultiCallViewController" bundle:nil];
+            [callVC startCallTo:userIdArray];
+        });
+    }];
 }
 
 @end

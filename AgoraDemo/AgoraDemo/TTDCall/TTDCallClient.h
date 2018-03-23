@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "TTDCallSession.h"
+#import <SVProgressHUD/SVProgressHUD.h>
+
+#define kLocalAccount   [TTDCallClient sharedTTDCallClient].account
 
 @interface TTDCallClient : NSObject
 
@@ -35,8 +38,6 @@
                    mediaType:(RCCallMediaType)type
              sessionDelegate:(id<RCCallSessionDelegate>)delegate
                        extra:(NSString *)extra;
-
-- (void)sendCallMessageWithKey:(NSString *)key success:(void (^)(long messageId))successBlock;
 
 - (void)loginWithAccount:(NSString *)account Success:(void(^)(uint32_t uid,int errorCode))success;
 @end

@@ -13,6 +13,7 @@
 @property (assign, nonatomic) NSUInteger uid;
 @property (strong, nonatomic) UIImageView *micStateView;
 @property (strong, nonatomic) UIView *speakingPoint;
+@property (strong, nonatomic) UILabel *stateLab;
 
 @end
 
@@ -39,6 +40,10 @@
     self.nameLab.text = name;
     [self addSubview:self.nameLab];
     
+    self.stateLab = [[UILabel alloc] init];
+    self.stateLab.text = @"发起邀请";
+    [self addSubview:self.stateLab];
+    
     self.hostingView = [[UIView alloc] init];
     [self addSubview:self.hostingView];
     
@@ -62,6 +67,7 @@
 {
     [super layoutSubviews];
     
+    self.stateLab.frame = CGRectMake(0, 0, self.frame.size.width, 20);
     self.nameLab.frame = CGRectMake(0, self.frame.size.height/2 - 10, self.frame.size.width, 20);
     self.hostingView.frame = self.bounds;
     self.micStateView.frame = CGRectMake(5, self.frame.size.height-30, 25, 25);

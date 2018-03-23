@@ -70,7 +70,9 @@
     }];
     
     for (User *user in self.userArr) {
-        [signalEngine channelQueryUserIsIn:self.channelId account:user.account];
+        if (self.channelId) {
+            [signalEngine channelQueryUserIsIn:self.channelId account:user.account];
+        }
         [signalEngine queryUserStatus:user.account];
     }
     [signalEngine channelQueryUserNum:self.channelId];
@@ -88,13 +90,18 @@
 
 -(IBAction)commit:(id)sender
 {
+    NSMutableArray *array = [NSMutableArray new];
     for (User *user in self.userArr) {
         if (user.isSelected && !user.channelId){
             NSLog(@"邀请 %@ 加入 %@",user.account, self.channelId);
-            [signalEngine channelInviteUser2:self.channelId account:user.account extra:nil];
+            [array addObject:user.account];
         }
     }
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (self.commitBlock) {
+            self.commitBlock(array);
+        }
+    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -116,7 +123,7 @@
     cell.nameLab.text = [NSString stringWithFormat:@"%ld",user.uid];
     if (!user.isOnline) {
         cell.desLab.text = @"不在线";
-        cell.selectedBtn.enabled = NO;
+        cell.selectedBtn.enabled = YES;
     }else{
         if (user.channelId) {
             cell.desLab.text = [NSString stringWithFormat:@"已加入频道"];
@@ -136,7 +143,7 @@
     UserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"UserCell" forIndexPath:indexPath];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    if (user.isOnline && !user.channelId) {
+    if (!user.channelId) {
         user.isSelected = !user.isSelected;
         dispatch_async(dispatch_get_main_queue(), ^{
             cell.selectedBtn.selected = user.isSelected;

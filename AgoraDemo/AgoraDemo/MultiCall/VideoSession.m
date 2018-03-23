@@ -23,8 +23,4 @@
     }
     return self;
 }
-
-+ (instancetype)localSession {
-    return [[VideoSession alloc] initWithUid:0];
-}
 @end

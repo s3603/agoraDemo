@@ -65,7 +65,7 @@
     [mediaEngine setClientRole:AgoraClientRoleBroadcaster];
     [mediaEngine setVideoProfile:AgoraVideoProfileLandscape240P swapWidthAndHeight:NO];
     [mediaEngine enableAudioVolumeIndication:500 smooth:3];
-    [mediaEngine enableVideo];
+//    [mediaEngine enableVideo];
     [self startLocalVideo];
 }
 
@@ -84,7 +84,7 @@
     // 接受邀请
     [signalEngine channelInviteAccept:self.channel account:self.inviter uid:0];
     
-    int uid = [TTDCallClient sharedTTDCallClient].account.intValue;
+    int uid = kLocalAccount.intValue;
     NSString *key = [KeyCenter generateMediaKey:self.channel uid:0 expiredTime:0];
     // 加入 media频道
     int result = [mediaEngine joinChannelByToken:key channelId:self.channel info:nil uid:uid joinSuccess:nil];
@@ -124,13 +124,13 @@
 
 -(void)setVideoView:(UIView *)view userId:(int)userId
 {
-    int loginUserId = [TTDCallClient sharedTTDCallClient].account.intValue;
+    int loginUserId = kLocalAccount.intValue;
     
     if (view) {
         if (loginUserId == userId) {
-            VideoSession *localSession = [VideoSession localSession];
-            localSession.canvas.view = view;
-            [mediaEngine setupLocalVideo:localSession.canvas];
+//            VideoSession *localSession = [VideoSession localSession];
+//            localSession.canvas.view = view;
+//            [mediaEngine setupLocalVideo:localSession.canvas];
         }else{
             VideoSession *userSession = [self videoSessionOfUid:userId];
             userSession.canvas.view = view;
@@ -171,17 +171,22 @@
     
     [mediaEngine stopPreview];
     [mediaEngine setupLocalVideo:nil];
-    if (self.callStatus == RCCallActive || self.callStatus == RCCallDialing) {
-    }
+    
     // 挂断
     [mediaEngine leaveChannel:nil];
     // 离开信令频道
     [signalEngine channelLeave:self.channel];
     
-    if (self.callStatus == RCCallDialing) {
-//        for (NSString *account in self.remoteUserIdArray) {
-//            [signalEngine channelInviteEnd:self.channel account:account uid:0];
-//        }
+    // 当前正在发起邀请 取消所有邀请
+    if (self.callStatus == RCCallActive || self.callStatus == RCCallDialing) {
+        for (VideoSession *session in self.videoSessions) {
+            NSString *account = [NSString stringWithFormat:@"%ld",session.uid];
+            [signalEngine channelInviteEnd:self.channel account:account uid:0];
+        }
+    }
+    // 接到邀请 拒绝
+    if (self.callStatus == RCCallIncoming || self.callStatus == RCCallRinging) {
+        [signalEngine channelInviteRefuse:self.channel account:self.inviter uid:0 extra:nil];
     }
     self.callStatus = RCCallHangup;
 //    [_sessionDelegate callDidDisconnect];
@@ -190,6 +195,8 @@
 //MARK: -  AgoraAPI Listener
 -(void)addSignalEngineListener
 {
+    __weak typeof(self) weakSelf = self;
+
     [signalEngine setOnChannelJoined:^(NSString *channelID) {
         // 加入成功
         NSLog(@"Join 信令 channel : %@", channelID);
@@ -198,12 +205,18 @@
         // 音视频加入成功， 信令加入失败， 重连机制
         NSLog(@"Join 信令 channel failed : %lu", (unsigned long)ecode);
     }];
+    
+    [signalEngine setOnChannelUserJoined:^(NSString *account, uint32_t uid) {
+        NSLog(@"User %@ Join 信令 channel %u", account,uid);
+    }];
+    
+    // 接收频道消息
     [signalEngine setOnMessageChannelReceive:^(NSString *channelID, NSString *account, uint32_t uid, NSString *msg) {
         NSLog(@"onMessageChannelReceive, channel: %@, account: %@, uid: %u, msg: %@", channelID, account, uid, msg);
         // 接到消息，判断是否命令自己
-        if ([channelID isEqualToString:self.channel]) {
+        if ([channelID isEqualToString:weakSelf.channel]) {
             NSDictionary *params = [msg JSONValue];
-            if ([[TTDCallClient sharedTTDCallClient].account isEqualToString:params[@"to"]] && [params[@"show"] intValue] == 0) {
+            if ([kLocalAccount isEqualToString:params[@"to"]] && [params[@"show"] intValue] == 0) {
                 TTDCMDMessageType type = [CMDKeys indexOfObject:params[@"cmd"]];
                 NSString *showMessage = @"";
                 if (type == MESSAGE_KICK) {
@@ -258,35 +271,115 @@
                 // 执行人是其他人 显示show==1 的提示信息
                 if ([params[@"show"] intValue] == 1) {
 //                    [AlertUtil showAlert:];
-                    [MAIN_WINDOW makeToast:params[@"showText"]];
+//                    [MAIN_WINDOW makeToast:params[@"showText"]];
+                }
+                if ([params[@"cmd"] isEqualToString:@"invite"]) {
+                    [_sessionDelegate remoteUserDidInvite:params[@"to"] mediaType:0];
+                    [self addVideoSession:params[@"to"]];
                 }
             }
         }
     }];
+    
     [signalEngine setOnMessageSendSuccess:^(NSString *messageID) {
         NSLog(@"发送消息成功 %@", messageID);
     }];
     [signalEngine setOnMessageSendError:^(NSString *messageID, AgoraEcode ecode) {
         NSLog(@"发送消息 %@ failed : %lu", messageID, (unsigned long)ecode);
     }];
+    
+    //MARK: 邀请相关回调
+    // 远端 收到呼叫
+    signalEngine.onInviteReceivedByPeer = ^(NSString* channelID, NSString *account, uint32_t uid) {
+        NSLog(@"onInviteReceivedByPeer, channel: %@, account: %@, uid: %u", channelID, account, uid);
+        if (![channelID isEqualToString:weakSelf.channel]) {
+            return;
+        }
+        // 振铃
+    };
+    
+    // 呼叫失败
+    signalEngine.onInviteFailed = ^(NSString* channelID, NSString* account, uint32_t uid, AgoraEcode ecode, NSString *extra) {
+        NSLog(@"Call %@ failed, ecode: %lu", account, (unsigned long)ecode);
+        if (![channelID isEqualToString:weakSelf.channel]) {
+            return;
+        }
+        [weakSelf deleteSession:account reason:RCCallDisconnectReasonRemoteNoResponse];
+    };
+    
+    // 远端接受呼叫
+    signalEngine.onInviteAcceptedByPeer = ^(NSString* channelID, NSString *account, uint32_t uid, NSString *extra) {
+        NSLog(@"onInviteAcceptedByPeer, channel: %@, account: %@, uid: %u, extra: %@", channelID, account, uid, extra);
+        if (![channelID isEqualToString:weakSelf.channel]) {
+            return;
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^() {
+            //            weakSelf.callingLabel.hidden = YES;
+            //            [weakSelf stopRing];
+            //            [weakSelf joinChannel];
+        });
+    };
+    
+    // 对方已拒绝呼叫
+    signalEngine.onInviteRefusedByPeer = ^(NSString* channelID, NSString *account, uint32_t uid, NSString *extra) {
+        NSLog(@"onInviteRefusedByPeer, channel: %@, account: %@, uid: %u, extra: %@", channelID, account, uid, extra);
+        if (![channelID isEqualToString:weakSelf.channel]) {
+            return;
+        }
+        [weakSelf deleteSession:account reason:RCCallDisconnectReasonRemoteReject];
+    };
+    
+    // 对方已结束呼叫
+    signalEngine.onInviteEndByPeer = ^(NSString* channelID, NSString *account, uint32_t uid, NSString *extra) {
+        NSLog(@"onInviteEndByPeer, channel: %@, account: %@, uid: %u, extra: %@", channelID, account, uid, extra);
+        if (![channelID isEqualToString:weakSelf.channel]) {
+            return;
+        }
+        // 对方已取消呼叫 如果不是正在通话，直接断开
+        if (weakSelf.callStatus != RCCallActive) {
+            [weakSelf.sessionDelegate callDidDisconnect];
+        }
+    };
+}
+
+
+//MARK: - 邀请加入通话
+-(void)inviteUsers:(NSArray *)userIdArray
+{
+//            {“_require_peer_online”:0} 如果对方不在线超过 20 秒，则触发 onInviteFailed 回调（默认）
+    for (NSString *account in userIdArray) {
+        NSDictionary *extraDic = @{@"_require_peer_online": @(0)};
+        [signalEngine channelInviteUser2:self.channel account:account extra:[extraDic JSONString]];
+        // add videoSession
+        [self addVideoSession:account];
+        // 邀请时 告诉频道用户，邀请了xxx
+        NSMutableDictionary *params = [self cmdParams:@"invite" To:account.intValue];
+        [params setValue:@1 forKey:@"show"];
+        [params setValue:[NSString stringWithFormat:@"%@邀请%@加入频道",kLocalAccount,account] forKey:@"showText"];
+        [signalEngine messageChannelSend:self.channel msg:[params JSONString] msgID:nil];
+    }
 }
 
 //MARK: sendChannelMessage
--(void)sendCMDMessage:(NSString *)key To:(NSUInteger)uid
+-(NSMutableDictionary *)cmdParams:(NSString *)key To:(NSUInteger)uid
 {
     NSString *to = [NSString stringWithFormat:@"%ld",uid];
-
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setObject:key forKey:@"cmd"];
     [params setObject:to forKey:@"to"];
-    [params setObject:[TTDCallClient sharedTTDCallClient].account forKey:@"from"];
+    [params setObject:kLocalAccount forKey:@"from"];
     [params setObject:@0 forKey:@"show"];
-
+    return params;
+}
+-(void)sendCMDMessage:(NSString *)key To:(NSUInteger)uid
+{
+    NSMutableDictionary *params = [self cmdParams:key To:uid];
     [signalEngine messageChannelSend:self.channel msg:[params JSONString] msgID:nil];
 }
 -(void)sendCMDExecuteMessage:(NSDictionary *)params ShowText:(NSString *)showText
 {
-    showText = [showText stringByReplacingOccurrencesOfString:@"您" withString:[NSString stringWithFormat:@"%@ ",[TTDCallClient sharedTTDCallClient].account]];
+    showText = [showText stringByReplacingOccurrencesOfString:@"您" withString:[NSString stringWithFormat:@"%@ ",kLocalAccount]];
     
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:params];
     [dic setValue:@1 forKey:@"show"];
@@ -338,23 +431,7 @@
     // only receive this callback if remote user logout unexpected
     //    [self leaveChannel];
     //    [self dismissViewControllerAnimated:NO completion:nil];
-    VideoSession *deleteSession;
-    for (VideoSession *session in self.videoSessions) {
-        if (session.uid == uid) {
-            deleteSession = session;
-        }
-    }
-    
-    if (deleteSession) {
-        [self.videoSessions removeObject:deleteSession];
-        [deleteSession.userView removeFromSuperview];
-        [self.sessionDelegate updateInterface:self.videoSessions];
-
-        if (deleteSession == self.fullSession) {
-            self.fullSession = nil;
-        }
-    }
-    [_sessionDelegate remoteUserDidLeft:[NSString stringWithFormat:@"%ld",uid] reason:RCCallDisconnectReasonRemoteHangup];
+//    [self deleteSession:[NSString stringWithFormat:@"ld",uid] reason:c]
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine
@@ -422,13 +499,50 @@
     }
 }
 
+-(void)addVideoSession:(NSString *)account
+{
+    VideoSession *fetchedSession = [self fetchSessionOfUid:account.intValue];
+    if (!fetchedSession) {
+        VideoSession *newSession = [[VideoSession alloc] initWithUid:account.intValue];
+        [self.videoSessions addObject:newSession];
+        dispatch_async_main_safe(^{
+            [self.sessionDelegate updateInterface:self.videoSessions];
+        });
+    }
+}
+
 - (void)startLocalVideo {
-    int loginUserId = [TTDCallClient sharedTTDCallClient].account.intValue;
+    int loginUserId = kLocalAccount.intValue;
     VideoSession *localSession = [[VideoSession alloc] initWithUid:loginUserId];
     [self.videoSessions addObject:localSession];
     
     [mediaEngine startPreview];
     [mediaEngine setupLocalVideo:localSession.canvas];
+}
+
+- (void)deleteSession:(NSString *)account reason:(RCCallDisconnectReason)reason
+{
+    int uid = account.intValue;
+    VideoSession *deleteSession;
+    for (VideoSession *session in self.videoSessions) {
+        if (session.uid == uid) {
+            deleteSession = session;
+        }
+    }
+    
+    if (deleteSession) {
+        [self.videoSessions removeObject:deleteSession];
+        
+        dispatch_async_main_safe(^{
+            [deleteSession.userView removeFromSuperview];
+            [self.sessionDelegate updateInterface:self.videoSessions];
+        });
+        if (deleteSession == self.fullSession) {
+            self.fullSession = nil;
+        }
+    }
+    [_sessionDelegate remoteUserDidLeft:account reason:reason];
+
 }
 
 @end

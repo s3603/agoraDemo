@@ -272,4 +272,7 @@
  @param uid 对方id
  */
 -(void)sendCMDMessage:(NSString *)key To:(NSUInteger)uid;
+
+-(void)inviteUsers:(NSArray *)userIdArray;
+
 @end

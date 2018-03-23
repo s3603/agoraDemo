@@ -28,7 +28,7 @@
         vc = vc.presentedViewController;
     }
     if (vc) {
-        dispatch_sync_main_safe(^{
+        dispatch_async_main_safe(^{
             [vc presentViewController:viewController animated:YES completion:nil];
         })
     }

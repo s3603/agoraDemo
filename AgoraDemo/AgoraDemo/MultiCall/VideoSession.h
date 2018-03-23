@@ -16,6 +16,5 @@
 @property (strong, nonatomic) UserVideoView *userView;
 
 - (instancetype)initWithUid:(NSUInteger)uid;
-+ (instancetype)localSession;
 
 @end

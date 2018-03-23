@@ -11,6 +11,7 @@
 @interface SelectedUserViewController : UIViewController
 
 @property (copy, nonatomic) NSString *channelId;
+@property (copy, nonatomic) void (^commitBlock)(NSArray *userIdArray) ;
 
 @end
 

@@ -60,11 +60,8 @@
     session.channel = self.channel;
     [session accept:0];
     
-    // 查询用户在线状态，并发起 通话请求
-    for (NSString *account in userIdList) {
-        [signalEngine queryUserStatus:account];
-    }
     session.callStatus = RCCallDialing;
+    [session inviteUsers:userIdList];
 
     _currentCallSession = session;
     
@@ -83,75 +80,11 @@
     return self.currentCallSession;
 }
 
-#pragma mark - 音视频Call IM消息处理
-//-(void)receiveCallMessage:(RCMessage *)message
-//{
-//
-//    RCDTestMessage *msg = (RCDTestMessage *)message.content;
-//    // 被叫人 收到视频邀请
-//    if ([msg.content isEqualToString:@"发起"]) {
-//        TTDCallSession *session = [[TTDCallClient sharedTTDCallClient] receiveCall:ConversationType_PRIVATE targetId:message.senderUserId to:nil mediaType:RCCallMediaVideo];
-//
-//        RCCallSingleCallViewController *singleCallViewController = [[RCCallSingleCallViewController alloc] initWithIncomingCall:session];
-//        UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;
-//        if (vc) {
-//            dispatch_sync_main_safe(^{
-//                [vc presentViewController:singleCallViewController animated:YES completion:nil];
-//            })
-//        }
-//        // 发出已经振铃消息
-//        [self sendCallMessageWithKey:@"振铃" success:nil];
-//    }
-//
-//    // 主叫人 收到被叫人已被振铃消息（在线）
-//    if ([msg.content isEqualToString:@"振铃"]) {
-//    }
-//    // 被叫人 收到 主叫人取消
-//    if ([msg.content isEqualToString:@"取消"]) {
-//        [self.currentCallSession hangup];
-//    }
-//    // 主叫人 收到 被叫人接受
-//    if ([msg.content isEqualToString:@"接受"]) {
-//        if (self.currentCallSession.callStatus != RCCallActive) {
-//            [self.currentCallSession accept:self.currentCallSession.mediaType];
-//        }
-//    }
-//    // 主叫人 收到 被叫人拒绝
-//    if ([msg.content isEqualToString:@"拒绝"]) {
-//        [self.currentCallSession hangup];
-//    }
-//    // 双方 收到对方 挂断
-//    if ([msg.content isEqualToString:@"挂断"]) {
-//        [self.currentCallSession hangup];
-//    }
-//
-//}
-
--(void)sendCallMessageWithKey:(NSString *)key success:(void (^)(long messageId))successBlock
-{
-//    RCDTestMessage *msg = [RCDTestMessage messageWithContent:key];
-//    [[RCIMClient sharedRCIMClient] sendMessage:self.currentCallSession.conversationType targetId:self.currentCallSession.targetId content:msg pushContent:nil pushData:nil success:^(long messageId) {
-//        if (successBlock) {
-//            successBlock(messageId);
-//        }
-//    } error:^(RCErrorCode nErrorCode, long messageId) {
-//        NSLog(@"发送失败。消息ID：%ld， 错误码：%ld", messageId, (long)nErrorCode);
-//    }];
-}
-
-//MARK: - 邀请加入通话
-- (void)inviteUser:(NSString *)name
-{
-    NSDictionary *extraDic = @{@"_require_peer_online": @(0)};
-    [signalEngine channelInviteUser2:self.channel account:name extra:extraDic.JSONString];
-}
-
 //MARK: - AgoraAPI 监听
 - (void)loadSignalEngine {
     signalEngine = [AgoraAPI getInstanceWithoutMedia:[KeyCenter appId]];
     
     __weak typeof(self) weakSelf = self;
-    
     signalEngine.onError = ^(NSString* name, AgoraEcode ecode, NSString* desc) {
         NSLog(@"onError, name: %@, code:%lu, desc: %@", name, (unsigned long)ecode, desc);
         if ([name isEqualToString:@"query_user_status"]) {
@@ -171,7 +104,7 @@
         else {
             //MARK: 用户在线 发起视频请求
             [weakSelf.remoteUserStatus setObject:@"1" forKey:@"name"];
-            [weakSelf inviteUser:name];
+//            [weakSelf inviteUser:name];
         }
 //        if (weakSelf.remoteUserStatus.count == weakSelf.remoteUserIdArray.count) {
 //            [weakSelf alertUserStatus];
@@ -188,76 +121,6 @@
         }else{
             
         }
-    };
-    
-    // 远端 收到呼叫
-    signalEngine.onInviteReceivedByPeer = ^(NSString* channelID, NSString *account, uint32_t uid) {
-        NSLog(@"onInviteReceivedByPeer, channel: %@, account: %@, uid: %u", channelID, account, uid);
-        if (![channelID isEqualToString:weakSelf.channel]) {
-            return;
-        }
-        // 振铃
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-//            [weakSelf playRing:@"tones"];
-        });
-    };
-    
-    // 呼叫失败
-    signalEngine.onInviteFailed = ^(NSString* channelID, NSString* account, uint32_t uid, AgoraEcode ecode, NSString *extra) {
-        NSLog(@"Call %@ failed, ecode: %lu", account, (unsigned long)ecode);
-        if (![channelID isEqualToString:weakSelf.channel]) {
-            return;
-        }
-//        [self.currentCallSession ]
-        //        dispatch_async(dispatch_get_main_queue(), ^{
-        //            [weakSelf leaveChannel];
-        //
-        //            [AlertUtil showAlert:@"Call failed" completion:^{
-        //                [weakSelf dismissViewControllerAnimated:NO completion:nil];
-        //            }];
-        //        });
-    };
-    
-    // 远端接受呼叫
-    signalEngine.onInviteAcceptedByPeer = ^(NSString* channelID, NSString *account, uint32_t uid, NSString *extra) {
-        NSLog(@"onInviteAcceptedByPeer, channel: %@, account: %@, uid: %u, extra: %@", channelID, account, uid, extra);
-        if (![channelID isEqualToString:weakSelf.channel]) {
-            return;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^() {
-//            weakSelf.callingLabel.hidden = YES;
-//            [weakSelf stopRing];
-//            [weakSelf joinChannel];
-        });
-    };
-    
-    // 对方已拒绝呼叫
-    signalEngine.onInviteRefusedByPeer = ^(NSString* channelID, NSString *account, uint32_t uid, NSString *extra) {
-        NSLog(@"onInviteRefusedByPeer, channel: %@, account: %@, uid: %u, extra: %@", channelID, account, uid, extra);
-        if (![channelID isEqualToString:weakSelf.channel]) {
-            return;
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSData *data = [extra dataUsingEncoding:NSUTF8StringEncoding];
-            NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            if ([dic[@"status"] intValue] == 1) {
-                NSString *message = [NSString stringWithFormat:@"%@ is busy", account];
-                [AlertUtil showAlert:message completion:^{
-                }];
-            }
-        });
-    };
-    
-    // 对方已结束呼叫
-    signalEngine.onInviteEndByPeer = ^(NSString* channelID, NSString *account, uint32_t uid, NSString *extra) {
-        NSLog(@"onInviteEndByPeer, channel: %@, account: %@, uid: %u, extra: %@", channelID, account, uid, extra);
-        if (![channelID isEqualToString:weakSelf.channel]) {
-            return;
-        }
-        // 已取消呼叫？
     };
     
     // 接收点对点消息

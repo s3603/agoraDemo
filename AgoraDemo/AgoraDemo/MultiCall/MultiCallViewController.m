@@ -8,8 +8,6 @@
 
 #import "MultiCallViewController.h"
 #import "VideoSession.h"
-#import <AgoraRtcEngineKit/AgoraRtcEngineKit.h>
-#import <AgoraSigKit/AgoraSigKit.h>
 #import "KeyCenter.h"
 #import "AlertUtil.h"
 #import "NSObject+JSONString.h"
@@ -52,6 +50,7 @@
         // 等待接听 振铃
         [self playRing:@"ring"];
         self.callingLabel.text = [NSString stringWithFormat:@" 接到%@的通话请求", self.callSession.inviter];
+        // 发送接到邀请的cmd message
     }
     [[AppViewManager sharedManager] presentVC:self];
 }
@@ -115,7 +114,10 @@
 {
     SelectedUserViewController *selectUserVC = [[SelectedUserViewController alloc] initWithNibName:@"SelectedUserViewController" bundle:nil];
     selectUserVC.channelId = self.callSession.channel;
-    [self presentViewController:selectUserVC animated:YES completion:nil ];
+    [self presentViewController:selectUserVC animated:YES completion:nil];
+    [selectUserVC setCommitBlock:^(NSArray *userIdArray) {
+        [self.callSession inviteUsers:userIdArray];
+    }];
 }
 
 -(IBAction)refreshUsers:(id)sender
@@ -229,7 +231,7 @@
  */
 - (void)remoteUserDidInvite:(NSString *)userId mediaType:(RCCallMediaType)mediaType;
 {
-    [self.view makeToast:[NSString stringWithFormat:@"%@ 被邀请加入",userId]];
+    
 }
 
 /*!
