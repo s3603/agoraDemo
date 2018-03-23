@@ -7,8 +7,13 @@
 //
 
 #import "ViewController.h"
+#import "KeyCenter.h"
+#import <AgoraSigKit/AgoraSigKit.h>
 
 @interface ViewController ()
+{
+    AgoraAPI *signalEngine;
+}
 
 @end
 
@@ -17,6 +22,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    signalEngine = [AgoraAPI getInstanceWithoutMedia:[KeyCenter appId]];
+
 }
 
 

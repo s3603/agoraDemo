@@ -13,6 +13,9 @@
 		8807F35120638A0F0023C65B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8807F35020638A0F0023C65B /* Assets.xcassets */; };
 		8807F35420638A0F0023C65B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8807F35220638A0F0023C65B /* LaunchScreen.storyboard */; };
 		8807F35720638A0F0023C65B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8807F35620638A0F0023C65B /* main.m */; };
+		8807F3622063A3870023C65B /* AgoraSigKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8807F3612063A3870023C65B /* AgoraSigKit.framework */; };
+		8807F3682063A3EA0023C65B /* KeyCenter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8807F3642063A3EA0023C65B /* KeyCenter.mm */; };
+		8807F36C2063A91D0023C65B /* NSObject+JSONString.m in Sources */ = {isa = PBXBuildFile; fileRef = 8807F36B2063A91D0023C65B /* NSObject+JSONString.m */; };
 		BE4FA0648C7468DF79181FCD /* Pods_AgoraDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DC6AF1C8F48D575F128FEEC /* Pods_AgoraDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +33,13 @@
 		8807F35320638A0F0023C65B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8807F35520638A0F0023C65B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8807F35620638A0F0023C65B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8807F3612063A3870023C65B /* AgoraSigKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AgoraSigKit.framework; sourceTree = "<group>"; };
+		8807F3642063A3EA0023C65B /* KeyCenter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyCenter.mm; sourceTree = "<group>"; };
+		8807F3652063A3EA0023C65B /* DynamicKey4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicKey4.h; sourceTree = "<group>"; };
+		8807F3662063A3EA0023C65B /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		8807F3672063A3EA0023C65B /* KeyCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCenter.h; sourceTree = "<group>"; };
+		8807F36A2063A91D0023C65B /* NSObject+JSONString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+JSONString.h"; sourceTree = "<group>"; };
+		8807F36B2063A91D0023C65B /* NSObject+JSONString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+JSONString.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,6 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8807F3622063A3870023C65B /* AgoraSigKit.framework in Frameworks */,
 				BE4FA0648C7468DF79181FCD /* Pods_AgoraDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -65,6 +76,9 @@
 		8807F34620638A0F0023C65B /* AgoraDemo */ = {
 			isa = PBXGroup;
 			children = (
+				8807F3692063A9090023C65B /* Catagories */,
+				8807F3602063A37A0023C65B /* Framework */,
+				8807F3632063A3D90023C65B /* KeyCenter */,
 				8807F34720638A0F0023C65B /* AppDelegate.h */,
 				8807F34820638A0F0023C65B /* AppDelegate.m */,
 				8807F34A20638A0F0023C65B /* ViewController.h */,
@@ -76,6 +90,34 @@
 				8807F35620638A0F0023C65B /* main.m */,
 			);
 			path = AgoraDemo;
+			sourceTree = "<group>";
+		};
+		8807F3602063A37A0023C65B /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				8807F3612063A3870023C65B /* AgoraSigKit.framework */,
+			);
+			path = Framework;
+			sourceTree = "<group>";
+		};
+		8807F3632063A3D90023C65B /* KeyCenter */ = {
+			isa = PBXGroup;
+			children = (
+				8807F3652063A3EA0023C65B /* DynamicKey4.h */,
+				8807F3672063A3EA0023C65B /* KeyCenter.h */,
+				8807F3642063A3EA0023C65B /* KeyCenter.mm */,
+				8807F3662063A3EA0023C65B /* utils.h */,
+			);
+			path = KeyCenter;
+			sourceTree = "<group>";
+		};
+		8807F3692063A9090023C65B /* Catagories */ = {
+			isa = PBXGroup;
+			children = (
+				8807F36A2063A91D0023C65B /* NSObject+JSONString.h */,
+				8807F36B2063A91D0023C65B /* NSObject+JSONString.m */,
+			);
+			path = Catagories;
 			sourceTree = "<group>";
 		};
 		AFB194ECFB23982A6FA594DC /* Pods */ = {
@@ -229,6 +271,8 @@
 			files = (
 				8807F34C20638A0F0023C65B /* ViewController.m in Sources */,
 				8807F35720638A0F0023C65B /* main.m in Sources */,
+				8807F36C2063A91D0023C65B /* NSObject+JSONString.m in Sources */,
+				8807F3682063A3EA0023C65B /* KeyCenter.mm in Sources */,
 				8807F34920638A0F0023C65B /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,6 +410,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4LHNZSFR95;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AgoraDemo/Framework",
+				);
 				INFOPLIST_FILE = AgoraDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ttd.AgoraDemo;
@@ -381,6 +429,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4LHNZSFR95;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AgoraDemo/Framework",
+				);
 				INFOPLIST_FILE = AgoraDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ttd.AgoraDemo;
