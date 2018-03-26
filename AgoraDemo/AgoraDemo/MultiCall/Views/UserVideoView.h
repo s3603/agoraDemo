@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) UIView *hostingView;
 @property (strong, nonatomic) UILabel *nameLab;
+@property (strong, nonatomic) UILabel *stateLab;
 
 @property(nonatomic, copy) void (^tapBlock)(NSUInteger uid);
 

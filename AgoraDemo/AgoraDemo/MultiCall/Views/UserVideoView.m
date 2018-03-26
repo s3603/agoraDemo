@@ -13,7 +13,6 @@
 @property (assign, nonatomic) NSUInteger uid;
 @property (strong, nonatomic) UIImageView *micStateView;
 @property (strong, nonatomic) UIView *speakingPoint;
-@property (strong, nonatomic) UILabel *stateLab;
 
 @end
 

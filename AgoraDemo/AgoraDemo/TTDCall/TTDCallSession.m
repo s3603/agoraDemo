@@ -295,7 +295,10 @@
         if (![channelID isEqualToString:weakSelf.channel]) {
             return;
         }
-        // 振铃
+        // 对方在线，发送cmdMessage 通知频道内用户
+        VideoSession *userSession = [weakSelf videoSessionOfUid:account.intValue];
+        [userSession.userView.stateLab setText:@"等待接受"];
+        
     };
     
     // 呼叫失败
@@ -313,7 +316,7 @@
         if (![channelID isEqualToString:weakSelf.channel]) {
             return;
         }
-        
+        // 接受会叫后 media监听会收到消息
         dispatch_async(dispatch_get_main_queue(), ^() {
             //            weakSelf.callingLabel.hidden = YES;
             //            [weakSelf stopRing];

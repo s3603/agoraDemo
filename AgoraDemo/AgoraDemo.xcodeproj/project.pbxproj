@@ -181,11 +181,11 @@
 		88F049EC2064971700FDA44C /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				88F049ED2064971700FDA44C /* UserTableViewCell.m */,
-				88F049EE2064971700FDA44C /* UserVideoView.h */,
 				88F049EF2064971700FDA44C /* UserTableViewCell.h */,
-				88F049F02064971700FDA44C /* UserVideoView.m */,
+				88F049ED2064971700FDA44C /* UserTableViewCell.m */,
 				88F049F12064971700FDA44C /* UserTableViewCell.xib */,
+				88F049EE2064971700FDA44C /* UserVideoView.h */,
+				88F049F02064971700FDA44C /* UserVideoView.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
