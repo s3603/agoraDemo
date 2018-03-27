@@ -127,13 +127,11 @@
     int loginUserId = kLocalAccount.intValue;
     
     if (view) {
+        VideoSession *userSession = [self videoSessionOfUid:userId];
+        userSession.canvas.view = view;
         if (loginUserId == userId) {
-//            VideoSession *localSession = [VideoSession localSession];
-//            localSession.canvas.view = view;
-//            [mediaEngine setupLocalVideo:localSession.canvas];
+            [mediaEngine setupLocalVideo:userSession.canvas];
         }else{
-            VideoSession *userSession = [self videoSessionOfUid:userId];
-            userSession.canvas.view = view;
             [mediaEngine setupRemoteVideo:userSession.canvas];
         }
     }else{
@@ -213,9 +211,21 @@
     // 接收频道消息
     [signalEngine setOnMessageChannelReceive:^(NSString *channelID, NSString *account, uint32_t uid, NSString *msg) {
         NSLog(@"onMessageChannelReceive, channel: %@, account: %@, uid: %u, msg: %@", channelID, account, uid, msg);
-        // 接到消息，判断是否命令自己
+        // 判断频道
         if ([channelID isEqualToString:weakSelf.channel]) {
             NSDictionary *params = [msg JSONValue];
+            
+            if ([params[@"cmd"] isEqualToString:@"invite"]) { // 接到邀请xxx
+                [weakSelf addVideoSession:params[@"to"]];
+                [weakSelf.sessionDelegate remoteUserDidInvite:params[@"to"] mediaType:0];
+            }else
+            if ([params[@"cmd"] isEqualToString:@"inviteReject"]) { // xxx拒绝邀请
+                [weakSelf deleteSession:params[@"to"] reason:RCCallDisconnectReasonRemoteReject];
+            }else
+            if ([params[@"cmd"] isEqualToString:@"inviteTimeOut"]) { // xxx无响应
+                [weakSelf deleteSession:params[@"to"] reason:RCCallDisconnectReasonRemoteNoResponse];
+            }else
+            // 接到消息，判断是否命令自己
             if ([kLocalAccount isEqualToString:params[@"to"]] && [params[@"show"] intValue] == 0) {
                 TTDCMDMessageType type = [CMDKeys indexOfObject:params[@"cmd"]];
                 NSString *showMessage = @"";
@@ -270,12 +280,8 @@
             }else{
                 // 执行人是其他人 显示show==1 的提示信息
                 if ([params[@"show"] intValue] == 1) {
-//                    [AlertUtil showAlert:];
+                    [SVProgressHUD showInfoWithStatus:params[@"showText"]];
 //                    [MAIN_WINDOW makeToast:params[@"showText"]];
-                }
-                if ([params[@"cmd"] isEqualToString:@"invite"]) {
-                    [_sessionDelegate remoteUserDidInvite:params[@"to"] mediaType:0];
-                    [self addVideoSession:params[@"to"]];
                 }
             }
         }
@@ -297,7 +303,9 @@
         }
         // 对方在线，发送cmdMessage 通知频道内用户
         VideoSession *userSession = [weakSelf videoSessionOfUid:account.intValue];
-        [userSession.userView.stateLab setText:@"等待接受"];
+        dispatch_async_main_safe(^{
+            [userSession.userView.stateLab setText:@"等待接受"];
+        });
         
     };
     
@@ -308,6 +316,8 @@
             return;
         }
         [weakSelf deleteSession:account reason:RCCallDisconnectReasonRemoteNoResponse];
+        NSMutableDictionary *params = [weakSelf cmdParams:@"inviteTimeOut" To:account.intValue];
+        [weakSelf sendCMDExecuteMessage:params ShowText:[NSString stringWithFormat:@"邀请%@无响应",account]];
     };
     
     // 远端接受呼叫
@@ -318,6 +328,7 @@
         }
         // 接受会叫后 media监听会收到消息
         dispatch_async(dispatch_get_main_queue(), ^() {
+            // 1v1时，加入频道响应
             //            weakSelf.callingLabel.hidden = YES;
             //            [weakSelf stopRing];
             //            [weakSelf joinChannel];
@@ -331,6 +342,9 @@
             return;
         }
         [weakSelf deleteSession:account reason:RCCallDisconnectReasonRemoteReject];
+        // 发送频道广播 xx拒绝加入
+        NSMutableDictionary *params = [weakSelf cmdParams:@"inviteReject" To:account.intValue];
+        [weakSelf sendCMDExecuteMessage:params ShowText:[NSString stringWithFormat:@"%@拒绝加入频道",account]];
     };
     
     // 对方已结束呼叫
@@ -358,9 +372,7 @@
         [self addVideoSession:account];
         // 邀请时 告诉频道用户，邀请了xxx
         NSMutableDictionary *params = [self cmdParams:@"invite" To:account.intValue];
-        [params setValue:@1 forKey:@"show"];
-        [params setValue:[NSString stringWithFormat:@"%@邀请%@加入频道",kLocalAccount,account] forKey:@"showText"];
-        [signalEngine messageChannelSend:self.channel msg:[params JSONString] msgID:nil];
+        [self sendCMDExecuteMessage:params ShowText:[NSString stringWithFormat:@"%@邀请%@加入频道",kLocalAccount,account]];
     }
 }
 
@@ -448,6 +460,13 @@
   didVideoEnabled:(BOOL)enabled byUid:(NSUInteger)uid
 {
     [_sessionDelegate remoteUserDidDisableCamera:!enabled byUser:[NSString stringWithFormat:@"%ld",uid]];
+    VideoSession *fetchedSession = [self fetchSessionOfUid:uid];
+    if (enabled) {
+        [fetchedSession.userView.hostingView setHidden:NO];
+        [mediaEngine setupRemoteVideo:fetchedSession.canvas];
+    }else{
+        [fetchedSession.userView.hostingView setHidden:YES];
+    }
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine reportAudioVolumeIndicationOfSpeakers:

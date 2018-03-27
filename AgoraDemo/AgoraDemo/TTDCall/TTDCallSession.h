@@ -20,6 +20,7 @@
 
 @optional
 
+// 应该用 setVideoView 实现，待修改
 - (void)updateInterface:(NSArray<VideoSession *> *)videoSessions;
 
 /*!
