@@ -65,7 +65,7 @@
     [mediaEngine setClientRole:AgoraClientRoleBroadcaster];
     [mediaEngine setVideoProfile:AgoraVideoProfileLandscape240P swapWidthAndHeight:NO];
     [mediaEngine enableAudioVolumeIndication:500 smooth:3];
-//    [mediaEngine enableVideo];
+    [mediaEngine enableVideo];
     [self startLocalVideo];
 }
 
@@ -248,12 +248,12 @@
                 if (type == MESSAGE_OPEN_VIDEO) {
                     showMessage = [NSString stringWithFormat:@"您被%@ 打开摄像头",params[@"from"]];
                     [AlertUtil showAlert:showMessage];
-                    [mediaEngine enableVideo];
+                    [self startLocalVideo];
                 }else
                 if (type == MESSAGE_CLOSE_VIDEO) {
                     showMessage = [NSString stringWithFormat:@"您被%@ 关闭摄像头",params[@"from"]];
                     [AlertUtil showAlert:showMessage];
-                    [mediaEngine disableVideo];
+                    [self stopLocalVideo];
                 }else
                 if (type == MESSAGE_OPEN_MIC) {
                     showMessage = [NSString stringWithFormat:@"您被%@ 打开麦克风",params[@"from"]];
@@ -459,14 +459,23 @@
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine
   didVideoEnabled:(BOOL)enabled byUid:(NSUInteger)uid
 {
-    [_sessionDelegate remoteUserDidDisableCamera:!enabled byUser:[NSString stringWithFormat:@"%ld",uid]];
+    
+}
+
+-(void)rtcEngine:(AgoraRtcEngineKit *)engine didVideoMuted:(BOOL)muted byUid:(NSUInteger)uid
+{
+    [_sessionDelegate remoteUserDidDisableCamera:muted byUser:[NSString stringWithFormat:@"%ld",uid]];
     VideoSession *fetchedSession = [self fetchSessionOfUid:uid];
-    if (enabled) {
+    if (!muted) {
         [fetchedSession.userView.hostingView setHidden:NO];
-        [mediaEngine setupRemoteVideo:fetchedSession.canvas];
     }else{
         [fetchedSession.userView.hostingView setHidden:YES];
     }
+}
+
+-(void)rtcEngine:(AgoraRtcEngineKit *)engine didLocalVideoEnabled:(BOOL)enabled byUid:(NSUInteger)uid
+{
+    NSLog(@"didLocalVideoEnabled %d %d ",enabled,uid);
 }
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine reportAudioVolumeIndicationOfSpeakers:
@@ -535,11 +544,32 @@
 
 - (void)startLocalVideo {
     int loginUserId = kLocalAccount.intValue;
-    VideoSession *localSession = [[VideoSession alloc] initWithUid:loginUserId];
-    [self.videoSessions addObject:localSession];
     
+    VideoSession *localSession = [self fetchSessionOfUid:loginUserId];
+    if (!localSession) {
+        localSession = [[VideoSession alloc] initWithUid:loginUserId];
+        [self.videoSessions addObject:localSession];
+    }
+    dispatch_async_main_safe(^{
+        localSession.userView.hostingView.hidden = NO;
+    });
     [mediaEngine startPreview];
     [mediaEngine setupLocalVideo:localSession.canvas];
+    // 发送广播消息
+    [mediaEngine muteLocalVideoStream:NO];
+}
+- (void)stopLocalVideo
+{
+    int loginUserId = kLocalAccount.intValue;
+    VideoSession *localSession = [self fetchSessionOfUid:loginUserId];
+    if (localSession) {
+        dispatch_async_main_safe(^{
+            localSession.userView.hostingView.hidden = YES;
+        });
+        [mediaEngine setupLocalVideo:nil];
+        [mediaEngine stopPreview];
+        [mediaEngine muteLocalVideoStream:YES];
+    }
 }
 
 - (void)deleteSession:(NSString *)account reason:(RCCallDisconnectReason)reason

@@ -275,7 +275,9 @@
  */
 - (void)remoteUserDidLeft:(NSString *)userId reason:(RCCallDisconnectReason)reason;
 {
-    [self.view makeToast:[NSString stringWithFormat:@"%@ 挂断了",userId]];
+    dispatch_async_main_safe((^{
+        [self.view makeToast:[NSString stringWithFormat:@"%@ 挂断了",userId]];
+    }));
 }
 
 /*!
