@@ -267,6 +267,8 @@
                     showMessage = [NSString stringWithFormat:@"您被%@ 设置为观众",params[@"from"]];
                     [AlertUtil showAlert:showMessage];
                     int success = [mediaEngine setClientRole:AgoraClientRoleAudience];
+                    [mediaEngine muteLocalAudioStream:YES];
+                    [mediaEngine muteLocalVideoStream:YES];
                     NSLog(@"%i",success);
                 }else
                 if (type == MESSAGE_PLAYER) {
@@ -443,6 +445,12 @@
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
     NSLog(@"rtcEngine:didOfflineOfUid: %ld", (long)uid);
+    // 设置为观众响应
+    VideoSession *userSession = [self videoSessionOfUid:uid];
+    dispatch_async_main_safe(^{
+        userSession.userView.hostingView.hidden = YES;
+        userSession.userView.stateLab.text = @"观众";
+    });
     // only receive this callback if remote user logout unexpected
     //    [self leaveChannel];
     //    [self dismissViewControllerAnimated:NO completion:nil];
