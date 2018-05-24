@@ -16,6 +16,7 @@
 		8807F3622063A3870023C65B /* AgoraSigKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8807F3612063A3870023C65B /* AgoraSigKit.framework */; };
 		8807F3682063A3EA0023C65B /* KeyCenter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8807F3642063A3EA0023C65B /* KeyCenter.mm */; };
 		8807F36C2063A91D0023C65B /* NSObject+JSONString.m in Sources */ = {isa = PBXBuildFile; fileRef = 8807F36B2063A91D0023C65B /* NSObject+JSONString.m */; };
+		88EDB70E20A149B600007CE7 /* ADCallKitManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EDB70C20A149B600007CE7 /* ADCallKitManager.m */; };
 		88F049FB2064971800FDA44C /* SelectedUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F049E32064971700FDA44C /* SelectedUserViewController.m */; };
 		88F049FC2064971800FDA44C /* MultiCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88F049E42064971700FDA44C /* MultiCallViewController.xib */; };
 		88F049FD2064971800FDA44C /* MultiCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F049E52064971700FDA44C /* MultiCallViewController.m */; };
@@ -54,6 +55,8 @@
 		8807F3672063A3EA0023C65B /* KeyCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCenter.h; sourceTree = "<group>"; };
 		8807F36A2063A91D0023C65B /* NSObject+JSONString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+JSONString.h"; sourceTree = "<group>"; };
 		8807F36B2063A91D0023C65B /* NSObject+JSONString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+JSONString.m"; sourceTree = "<group>"; };
+		88EDB70C20A149B600007CE7 /* ADCallKitManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ADCallKitManager.m; sourceTree = "<group>"; };
+		88EDB70D20A149B600007CE7 /* ADCallKitManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ADCallKitManager.h; sourceTree = "<group>"; };
 		88F049E32064971700FDA44C /* SelectedUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectedUserViewController.m; sourceTree = "<group>"; };
 		88F049E42064971700FDA44C /* MultiCallViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiCallViewController.xib; sourceTree = "<group>"; };
 		88F049E52064971700FDA44C /* MultiCallViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiCallViewController.m; sourceTree = "<group>"; };
@@ -198,6 +201,8 @@
 				88F049F42064971700FDA44C /* TTDCallClient.m */,
 				88F049F92064971700FDA44C /* TTDCallSession.h */,
 				88F049F52064971700FDA44C /* TTDCallSession.m */,
+				88EDB70D20A149B600007CE7 /* ADCallKitManager.h */,
+				88EDB70C20A149B600007CE7 /* ADCallKitManager.m */,
 				88F049FA2064971700FDA44C /* AppViewManager.h */,
 				88F049F62064971700FDA44C /* AppViewManager.m */,
 				88F04A082064985600FDA44C /* AlertUtil.h */,
@@ -360,6 +365,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				88F049FB2064971800FDA44C /* SelectedUserViewController.m in Sources */,
+				88EDB70E20A149B600007CE7 /* ADCallKitManager.m in Sources */,
 				88F04A052064971800FDA44C /* TTDCallSession.m in Sources */,
 				88F04A002064971800FDA44C /* VideoSession.m in Sources */,
 				88F04A0C2064986700FDA44C /* UIView+Toast.m in Sources */,
@@ -516,7 +522,7 @@
 					"$(PROJECT_DIR)/AgoraDemo/Framework",
 				);
 				INFOPLIST_FILE = AgoraDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ttd.AgoraDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -537,7 +543,7 @@
 					"$(PROJECT_DIR)/AgoraDemo/Framework",
 				);
 				INFOPLIST_FILE = AgoraDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ttd.AgoraDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -613,7 +619,7 @@
 					"$(PROJECT_DIR)/AgoraDemo/Framework",
 				);
 				INFOPLIST_FILE = AgoraDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ttd.AgoraDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";

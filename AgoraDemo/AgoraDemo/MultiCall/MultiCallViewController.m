@@ -37,7 +37,7 @@
 -(void)startCallTo:(NSArray *)userIdList
 {
     self.remoteUserIdArray = userIdList;
-    self.callSession = [[TTDCallClient sharedTTDCallClient] startCall:0 targetId:@"test" to:userIdList mediaType:RCCallMediaVideo sessionDelegate:self extra:nil];
+    self.callSession = [[TTDCallClient sharedTTDCallClient] startCall:0 targetId:@"10002" to:userIdList mediaType:RCCallMediaVideo sessionDelegate:self extra:nil];
     [[AppViewManager sharedManager] presentVC:self];
 }
 

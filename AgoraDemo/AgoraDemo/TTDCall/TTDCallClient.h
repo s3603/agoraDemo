@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "TTDCallSession.h"
 #import <SVProgressHUD/SVProgressHUD.h>
+#import <CallKit/CallKit.h>
 
 #define kLocalAccount   [TTDCallClient sharedTTDCallClient].account
 
@@ -17,6 +18,9 @@
 @property(nonatomic, strong, readonly) TTDCallSession *currentCallSession;
 
 @property(nonatomic, copy, readonly) NSString *account;
+
+@property (nonatomic,strong) CXProvider * provider;
+@property (nonatomic,strong) CXCallController *callController;
 
 + (instancetype)sharedTTDCallClient;
 

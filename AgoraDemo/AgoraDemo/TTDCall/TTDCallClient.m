@@ -15,7 +15,7 @@
 #import "NSObject+JSONString.h"
 #import "AppViewManager.h"
 
-@interface TTDCallClient ()
+@interface TTDCallClient () <CXProviderDelegate>
 {
     AgoraAPI *signalEngine;
 }
@@ -35,7 +35,16 @@
     dispatch_once(&predicate, ^{
         instance = [[[self class] alloc] init];
         [instance loadSignalEngine];
+        // CallKit
+        CXProviderConfiguration *configuration = [[CXProviderConfiguration alloc] initWithLocalizedName:@"TTD视频"];
+        configuration.maximumCallGroups = 1;
+        configuration.maximumCallsPerCallGroup = 1;
+        configuration.supportedHandleTypes = [NSSet setWithObject:@(CXHandleTypePhoneNumber)];
+        configuration.supportsVideo = NO;
         
+        instance.provider = [[CXProvider alloc] initWithConfiguration:configuration];
+        [instance.provider setDelegate:self queue:nil];
+        instance.callController = [[CXCallController alloc] init];
     });
     return instance;
 }
@@ -113,11 +122,23 @@
     
     // 接到邀请
     signalEngine.onInviteReceived = ^(NSString *channelID, NSString *account, uint32_t uid, NSString *extra) {
-        NSLog(@"onInviteReceived, channel: %@, account: %@, uid: %u", channelID, account, uid);
+        NSLog(@"onInviteReceived, channel: %@, account: %@, extra: %@", channelID, account, extra);
         if (!weakSelf.currentCallSession || weakSelf.currentCallSession.callStatus == RCCallHangup) {
+            NSDictionary *dic = [extra JSONValue];
             // 弹出接受呼叫VC
-            MultiCallViewController *callVC = [[MultiCallViewController alloc] initWithNibName:@"MultiCallViewController" bundle:nil];
-            [callVC showWithCall:[weakSelf receiveCall:channelID inviter:account to:nil mediaType:RCCallMediaVideo]];
+//            MultiCallViewController *callVC = [[MultiCallViewController alloc] initWithNibName:@"MultiCallViewController" bundle:nil];
+//            [callVC showWithCall:[weakSelf receiveCall:channelID inviter:account to:nil mediaType:RCCallMediaVideo]];
+            CXCallUpdate *update = [[CXCallUpdate alloc] init];
+            update.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:account];
+            
+            [weakSelf.provider reportNewIncomingCallWithUUID:[[NSUUID alloc] initWithUUIDString:dic[@"uuid"]] update:update completion:^(NSError * _Nullable error) {
+                if (!error) {
+                    
+                }else{
+                    NSLog(@"reportNewIncomingCallWithUUID error %@",error);
+                }
+            }];
+            
         }else{
             
         }
@@ -162,4 +183,33 @@
         });
     };
 }
+
+// MARK: - CallKit
+-(void)receiveCallWithName:(NSString *)name
+{
+    
+    CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
+    NSString *remoteNickName = name;
+    
+    if (!remoteNickName) {
+        remoteNickName = @"未知号码";
+    }
+    
+    [callUpdate setLocalizedCallerName:remoteNickName];
+    
+//    [callUpdate setHasVideo:[self isVideoCall]];
+    
+    CXHandle *calleeHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:remoteNickName];
+    [callUpdate setRemoteHandle:calleeHandle];
+    [_provider reportNewIncomingCallWithUUID:[NSUUID UUID] update:callUpdate completion:^(NSError *error){
+        NSLog(@"%@",error);
+//        completion(error);
+    }];
+}
+
+-(void)finishCallWithReason:(CXCallEndedReason)reason
+{
+    [_provider reportCallWithUUID:[NSUUID UUID] endedAtDate:nil reason:reason];
+}
+
 @end

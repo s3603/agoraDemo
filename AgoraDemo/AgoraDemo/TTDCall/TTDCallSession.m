@@ -15,6 +15,7 @@
 #import "AlertUtil.h"
 #import "NSObject+JSONString.h"
 #import "UIView+Toast.h"
+#import <CallKit/CallKit.h>
 
 @interface TTDCallSession () <AgoraRtcEngineDelegate>
 {
@@ -368,13 +369,26 @@
 {
 //            {“_require_peer_online”:0} 如果对方不在线超过 20 秒，则触发 onInviteFailed 回调（默认）
     for (NSString *account in userIdArray) {
-        NSDictionary *extraDic = @{@"_require_peer_online": @(0)};
+        NSUUID *callUUID = [NSUUID UUID];
+
+        NSDictionary *extraDic = @{@"_require_peer_online": @(0),@"uuid":[callUUID UUIDString]};
+//        [extraDic setValue:[callUUID UUIDString] forKey:@"uuid"];
         [signalEngine channelInviteUser2:self.channel account:account extra:[extraDic JSONString]];
         // add videoSession
         [self addVideoSession:account];
         // 邀请时 告诉频道用户，邀请了xxx
         NSMutableDictionary *params = [self cmdParams:@"invite" To:account.intValue];
         [self sendCMDExecuteMessage:params ShowText:[NSString stringWithFormat:@"%@邀请%@加入频道",kLocalAccount,account]];
+        
+        CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypePhoneNumber value:account];
+        
+        CXStartCallAction *action = [[CXStartCallAction alloc] initWithCallUUID:callUUID handle:handle];
+        action.contactIdentifier = [callUUID UUIDString];
+        CXTransaction *transaction = [CXTransaction new];
+        [transaction addAction:action];
+        [[TTDCallClient sharedTTDCallClient].callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
+            NSLog(@"%@",error);
+        }];
     }
 }
 
@@ -445,7 +459,7 @@
 
 - (void)rtcEngine:(AgoraRtcEngineKit *)engine didOfflineOfUid:(NSUInteger)uid reason:(AgoraUserOfflineReason)reason {
     NSLog(@"rtcEngine:didOfflineOfUid: %ld", (long)uid);
-    // 设置为观众响应
+    // 设置为观众 rtcEngine 响应 didOfflineOfUid
     VideoSession *userSession = [self videoSessionOfUid:uid];
     dispatch_async_main_safe(^{
         userSession.userView.hostingView.hidden = YES;
@@ -603,6 +617,16 @@
     }
     [_sessionDelegate remoteUserDidLeft:account reason:reason];
 
+}
+
+-(void)rtcEngine:(AgoraRtcEngineKit *)engine didClientRoleChanged:(AgoraClientRole)oldRole newRole:(AgoraClientRole)newRole
+{
+    
+}
+
+-(void)rtcEngine:(AgoraRtcEngineKit *)engine networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality
+{
+    
 }
 
 @end
